@@ -29,6 +29,24 @@ SUBMIT_TIMEOUT = 30.0
 JSON_TIMEOUT = 15.0
 
 
+def _same_job(text_id: str, json_ids: set[str]) -> bool:
+    """テキストの ``123_[1-10]``（待機中の配列ジョブ）も JSON の ``123`` と同じジョブとみなす。"""
+    return text_id in json_ids or text_id.split("_[", 1)[0] in json_ids
+
+
+def merge_jobs(all_jobs: list[Job], mine: list[Job]) -> list[Job]:
+    """全ジョブ（テキスト）のうち自分のジョブを JSON 版に置き換える。順序はテキスト側を保つ。"""
+    by_id = {j.job_id: j for j in mine}
+    merged: list[Job] = []
+    for job in all_jobs:
+        if job.job_id in by_id:
+            merged.append(by_id[job.job_id])
+        elif not _same_job(job.job_id, set(by_id)):
+            merged.append(job)
+    seen = {j.job_id for j in merged}
+    return merged + [j for j in mine if j.job_id not in seen]  # テキスト取得後に投入された分
+
+
 def json_fallback_message(result: CommandResult, exc: Exception) -> str:
     """原因（出力の切り詰め / 壊れたJSON）が分かる警告文。出力内容そのものは含めない。"""
     size = len(result.stdout.encode("utf-8", errors="replace"))
@@ -36,7 +54,7 @@ def json_fallback_message(result: CommandResult, exc: Exception) -> str:
         cause = f"出力が上限を超えて切り詰められました（{size} バイトで打ち切り）"
     else:
         cause = f"Slurm の JSON が不正です（{size} バイト、{exc}）"
-    return f"squeue --json を解析できないためテキスト形式に切替: {cause}"
+    return f"squeue --json --me を解析できないためテキスト形式に切替: {cause}"
 
 
 class SlurmAdapter:
@@ -116,18 +134,23 @@ class SlurmAdapter:
     # ------------------------------------------------------------ 読み取り
 
     async def get_jobs(self) -> list[Job]:
-        if self._use_json:
-            jobs = await self._get_jobs_json()
-            if jobs is not None:
-                return jobs
-        text = await self._run_ok(["squeue", "-h", "-a", "-o", p.SQUEUE_FORMAT])
-        return p.parse_squeue_text(text, self._warnings)
+        """全ジョブは軽いテキスト形式、自分のジョブだけ詳細な JSON で取得して合わせる。
 
-    async def _get_jobs_json(self) -> list[Job] | None:
-        """JSON で取得する。解析できなければ原因付きで警告し、以後テキスト形式に切り替える。"""
-        result = await self._run(["squeue", "--json"], timeout=JSON_TIMEOUT)
+        全ジョブの ``squeue --json`` は大規模クラスタで数十MBになり（HAKUSAN 実機で 16MiB 超）、
+        ログインノードで定期取得するには重いため使わない。
+        """
+        text = await self._run_ok(["squeue", "-h", "-a", "-o", p.SQUEUE_FORMAT],
+                                  timeout=JSON_TIMEOUT)
+        all_jobs = p.parse_squeue_text(text, self._warnings)
+        mine = await self._get_my_jobs_json() if self._use_json else None
+        return all_jobs if mine is None else merge_jobs(all_jobs, mine)
+
+    async def _get_my_jobs_json(self) -> list[Job] | None:
+        """自分のジョブを JSON で取得する。解析できなければ原因付きで警告し、以後テキストのみにする。"""
+        result = await self._run(["squeue", "--json", "--me"], timeout=JSON_TIMEOUT)
         if not result.ok:
-            raise AdapterError(result.error_message())
+            self._warnings.append(f"squeue --json --me に失敗: {result.error_message()}")
+            return None
         try:
             return p.parse_squeue_json(result.stdout)
         except p.ParseError as exc:
