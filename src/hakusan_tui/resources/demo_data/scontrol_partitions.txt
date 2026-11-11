@@ -1,0 +1,10 @@
+PartitionName=TINY Default=NO MaxTime=00:30:00 Nodes=lcpcc-004 State=UP TotalCPUs=128 TotalNodes=1 TRES=cpu=128,node=1
+PartitionName=DEF Default=YES MaxTime=1-00:00:00 Nodes=lcpcc-00[1-4] State=UP TotalCPUs=512 TotalNodes=4 TRES=cpu=512,node=4
+PartitionName=SINGLE Default=NO MaxTime=7-00:00:00 Nodes=lcpcc-00[1-3] State=UP TotalCPUs=384 TotalNodes=3 TRES=cpu=384,node=3
+PartitionName=LONG Default=NO MaxTime=14-00:00:00 Nodes=lcpcc-00[1-3] State=UP TotalCPUs=384 TotalNodes=3 TRES=cpu=384,node=3
+PartitionName=GPU-1 Default=NO MaxTime=1-00:00:00 Nodes=spcc-a40g0[1-3] State=UP TotalCPUs=192 TotalNodes=3 TRES=cpu=192,node=3,gres/gpu=6
+PartitionName=GPU-S Default=NO MaxTime=2-00:00:00 Nodes=spcc-a40g0[1-3] State=UP TotalCPUs=192 TotalNodes=3 TRES=cpu=192,node=3,gres/gpu=6
+PartitionName=GPU-L Default=NO MaxTime=7-00:00:00 Nodes=spcc-a40g0[1-3] State=UP TotalCPUs=192 TotalNodes=3 TRES=cpu=192,node=3,gres/gpu=6
+PartitionName=GPU-1A Default=NO MaxTime=1-00:00:00 Nodes=spcc-a100g0[1-2] State=UP TotalCPUs=128 TotalNodes=2 TRES=cpu=128,node=2,gres/gpu=4
+PartitionName=GPU-LA Default=NO MaxTime=7-00:00:00 Nodes=spcc-a100g0[1-2] State=UP TotalCPUs=128 TotalNodes=2 TRES=cpu=128,node=2,gres/gpu=4
+PartitionName=GPU-VM Default=NO MaxTime=12:00:00 Nodes=vm-h100q0[1-2] State=UP TotalCPUs=32 TotalNodes=2 TRES=cpu=32,node=2,gres/gpu=2

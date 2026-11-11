@@ -1,0 +1,10 @@
+1testuserGPU-1COMPLETED0:000:00:211billing=1,cpu=1,gres/gpu=1,mem=250M,node=1billing=1,cpu=1,gres/gpu=1,mem=250M,node=12026-11-11T10:38:562026-11-11T10:39:172026-11-11T10:38:56/home/testusergtest
+1.batchCOMPLETED0:000:00:211cpu=1,gres/gpu=1,mem=250M,node=13232K2026-11-11T10:38:562026-11-11T10:39:172026-11-11T10:38:56batch
+2testuserDEFCOMPLETED0:000:00:031billing=1,cpu=1,mem=250M,node=1billing=1,cpu=1,mem=250M,node=12026-11-11T10:38:572026-11-11T10:39:002026-11-11T10:38:56/home/testuserctest
+2.batchCOMPLETED0:000:00:031cpu=1,mem=250M,node=12026-11-11T10:38:572026-11-11T10:39:002026-11-11T10:38:57batch
+4testuserGPU-1COMPLETED0:000:05:011billing=1,cpu=1,gres/gpu=1,mem=250M,node=1billing=1,cpu=1,gres/gpu=1,mem=250M,node=12026-11-11T10:44:332026-11-11T10:49:342026-11-11T10:39:32/home/testusertrain vla|x
+4.batchCOMPLETED0:000:05:011cpu=1,gres/gpu=1,mem=250M,node=13284K2026-11-11T10:44:332026-11-11T10:49:342026-11-11T10:44:33batch
+5testuserDEFCOMPLETED0:000:05:012billing=2,cpu=2,mem=500M,node=1billing=2,cpu=2,mem=500M,node=12026-11-11T10:39:322026-11-11T10:44:332026-11-11T10:39:32/home/testuserpreprocess
+5.batchCOMPLETED0:000:05:012cpu=2,mem=500M,node=13196K2026-11-11T10:39:322026-11-11T10:44:332026-11-11T10:39:32batch
+6testuserDEFCOMPLETED0:000:01:004billing=4,cpu=4,mem=1000M,node=1billing=4,cpu=4,mem=1000M,node=12026-11-11T10:44:342026-11-11T10:45:342026-11-11T10:39:32/home/testuserwaiting_cpu
+6.batchCOMPLETED0:000:01:004cpu=4,mem=1000M,node=13204K2026-11-11T10:44:342026-11-11T10:45:342026-11-11T10:44:34batch

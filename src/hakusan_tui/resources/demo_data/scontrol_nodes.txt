@@ -1,0 +1,11 @@
+NodeName=lcpcc-001 Arch=x86_64 CPUAlloc=128 CPUTot=128 Gres=(null) RealMemory=512000 AllocMem=400000 State=ALLOCATED Partitions=DEF,SINGLE,LONG CfgTRES=cpu=128,mem=500G,billing=128 AllocTRES=cpu=128,mem=390G
+NodeName=lcpcc-002 Arch=x86_64 CPUAlloc=64 CPUTot=128 Gres=(null) RealMemory=512000 AllocMem=200000 State=MIXED Partitions=DEF,SINGLE,LONG CfgTRES=cpu=128,mem=500G,billing=128 AllocTRES=cpu=64,mem=195G
+NodeName=lcpcc-003 Arch=x86_64 CPUAlloc=0 CPUTot=128 Gres=(null) RealMemory=512000 AllocMem=0 State=IDLE Partitions=DEF,SINGLE,LONG CfgTRES=cpu=128,mem=500G,billing=128 AllocTRES=
+NodeName=lcpcc-004 Arch=x86_64 CPUAlloc=0 CPUTot=128 Gres=(null) RealMemory=512000 AllocMem=0 State=DRAIN Partitions=TINY,DEF CfgTRES=cpu=128,mem=500G,billing=128 AllocTRES= Reason=メンテナンス中 [admin@2026-11-09T09:00:00]
+NodeName=spcc-a100g01 Arch=x86_64 CPUAlloc=32 CPUTot=64 Gres=gpu:a100:2 RealMemory=1024000 AllocMem=256000 State=MIXED Partitions=GPU-1A,GPU-LA CfgTRES=cpu=64,mem=1000G,billing=64,gres/gpu=2 AllocTRES=cpu=32,mem=250G,gres/gpu=2
+NodeName=spcc-a100g02 Arch=x86_64 CPUAlloc=8 CPUTot=64 Gres=gpu:a100:2 RealMemory=1024000 AllocMem=64000 State=MIXED Partitions=GPU-1A,GPU-LA CfgTRES=cpu=64,mem=1000G,billing=64,gres/gpu=2 AllocTRES=cpu=8,mem=62G,gres/gpu=1
+NodeName=spcc-a40g01 Arch=x86_64 CPUAlloc=16 CPUTot=64 Gres=gpu:a40:2 RealMemory=512000 AllocMem=64000 State=MIXED Partitions=GPU-1,GPU-S,GPU-L CfgTRES=cpu=64,mem=500G,billing=64,gres/gpu=2 AllocTRES=cpu=16,mem=62G,gres/gpu=1
+NodeName=spcc-a40g02 Arch=x86_64 CPUAlloc=0 CPUTot=64 Gres=gpu:a40:2 RealMemory=512000 AllocMem=0 State=IDLE Partitions=GPU-1,GPU-S,GPU-L CfgTRES=cpu=64,mem=500G,billing=64,gres/gpu=2 AllocTRES=
+NodeName=spcc-a40g03 Arch=x86_64 CPUAlloc=0 CPUTot=64 Gres=gpu:a40:2 RealMemory=512000 AllocMem=0 State=DOWN* Partitions=GPU-1,GPU-S,GPU-L CfgTRES=cpu=64,mem=500G,billing=64,gres/gpu=2 AllocTRES= Reason=Not responding
+NodeName=vm-h100q01 Arch=x86_64 CPUAlloc=16 CPUTot=16 Gres=gpu:h100_1_4:1 RealMemory=230000 AllocMem=120000 State=ALLOCATED Partitions=GPU-VM CfgTRES=cpu=16,mem=225G,billing=16,gres/gpu=1 AllocTRES=cpu=16,mem=117G,gres/gpu=1
+NodeName=vm-h100q02 Arch=x86_64 CPUAlloc=0 CPUTot=16 Gres=gpu:h100_1_4:1 RealMemory=230000 State=IDLE Partitions=GPU-VM CfgTRES=cpu=16,mem=225G,billing=16,gres/gpu=1

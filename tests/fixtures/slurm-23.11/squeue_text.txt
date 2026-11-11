@@ -1,0 +1,4 @@
+6|waiting_cpu|testuser|DEF|PENDING|0:00|1-00:00:00|1|(Resources)|4|N/A|250M
+5|preprocess|testuser|DEF|RUNNING|0:14|1-00:00:00|1|lcpcc-001|2|N/A|500M
+4|train vla|x|testuser|GPU-1|PENDING|0:00|12:00:00|1|(Resources)|1|gres/gpu:1|250M
+3|other_big|otheruser|GPU-1|RUNNING|0:14|12:00:00|1|spcc-a40g01|1|gres/gpu:a40:2|250M

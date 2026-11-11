@@ -1,0 +1,8 @@
+/opt/modulefiles:
+cuda/12.4
+cuda/12.6
+gcc/13.2.0
+intel/2025.1
+mpi/openmpi-5.0
+nvhpc/25.1
+llvm/19

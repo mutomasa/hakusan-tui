@@ -1,0 +1,12 @@
+     QUEUE STA   FREE  TOTAL   FREE  TOTAL RESORC  OTHER    MAX  DEFAULT    MAX
+ PARTITION TUS  CORES  CORES  NODES  NODES PENDNG PENDNG  NODES WALLTIME WALLTIME
+      TINY  UP      0    128      0      1      0      0      1     None    00:30
+      DEF*  UP    192    512      1      4      0      2      4     None  1-00:00
+    SINGLE  UP    192    384      1      3      0      0      1     None  7-00:00
+      LONG  UP    192    384      1      3      0      0      3     None 14-00:00
+     GPU-1  UP     48    192      1      3      0      0      1     None  1-00:00
+     GPU-S  UP     48    192      1      3      0      1      1     None  2-00:00
+     GPU-L  UP     48    192      1      3      0      0      1     None  7-00:00
+    GPU-1A  UP     88    128      0      2      1      0      1     None  1-00:00
+    GPU-LA  UP     88    128      0      2      0      0      1     None  7-00:00
+    GPU-VM  UP     16     32      1      2      0      0      1     None    12:00

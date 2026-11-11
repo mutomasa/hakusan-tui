@@ -1,0 +1,40 @@
+# hakusan-tui 結合テスト用の小さなSlurmクラスタ
+name: hakusan-tui-test
+x-node: &node
+  build: .
+  image: hakusan-tui-slurm:test
+  volumes:
+    - home:/home
+  depends_on: [ctl]
+  # slurmd 23.11 は cgroup/v2 の書き込みが必須なため（テスト専用）
+  privileged: true
+  # slurmd を PID 1 にしない（cgroup v2 のルート判定が /proc/1/cgroup を使うため）
+  init: true
+  cgroup: private
+services:
+  db:
+    image: mariadb:11
+    environment:
+      MARIADB_ROOT_PASSWORD: rootpass
+      MARIADB_DATABASE: slurm_acct_db
+      MARIADB_USER: slurm
+      MARIADB_PASSWORD: slurmpass
+  ctl:
+    build: .
+    image: hakusan-tui-slurm:test
+    hostname: ctl
+    command: ["ctl"]
+    volumes:
+      - home:/home
+      - ..:/work
+    depends_on: [db]
+  lcpcc-001:
+    <<: *node
+    hostname: lcpcc-001
+    command: ["node"]
+  spcc-a40g01:
+    <<: *node
+    hostname: spcc-a40g01
+    command: ["node"]
+volumes:
+  home:

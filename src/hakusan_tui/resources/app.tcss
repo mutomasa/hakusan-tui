@@ -1,0 +1,178 @@
+/* hakusan-tui 共通テーマ（80×24 でも崩れないよう余白は最小限） */
+
+#topbar {
+    height: 1;
+    background: $primary;
+    color: $text;
+    text-style: bold;
+}
+
+#statusbar {
+    height: 1;
+    background: $panel;
+    color: $text-muted;
+}
+
+#main-tabs {
+    height: 1fr;
+}
+
+TabPane {
+    padding: 0 1;
+}
+
+.toolbar {
+    height: auto;
+    margin: 0 0 1 0;
+}
+
+.toolbar Button {
+    margin-right: 1;
+}
+
+.filter {
+    width: 24;
+}
+
+.search {
+    width: 1fr;
+}
+
+.hint {
+    color: $text-muted;
+    height: auto;
+    margin: 0 0 1 0;
+}
+
+.section-title {
+    text-style: bold;
+    color: $accent;
+    margin-top: 1;
+}
+
+.source-line {
+    color: $text-muted;
+    height: auto;
+}
+
+DataTable {
+    height: 1fr;
+    min-height: 4;
+}
+
+#cards {
+    grid-size: 2 2;
+    grid-gutter: 0 1;
+    height: auto;
+}
+
+.card {
+    border: round $primary;
+    padding: 0 1;
+    height: auto;
+    min-height: 5;
+}
+
+.split {
+    height: 1fr;
+}
+
+.split > Vertical {
+    width: 1fr;
+    margin-right: 1;
+}
+
+/* ジョブ投入 */
+#submit-form {
+    width: 2fr;
+    padding-right: 1;
+}
+
+#submit-form Input, #submit-form Select {
+    margin-bottom: 0;
+}
+
+.command-editor {
+    height: 8;
+}
+
+#submit-preview {
+    width: 3fr;
+}
+
+#submit-issues {
+    height: auto;
+    max-height: 10;
+}
+
+#submit-script {
+    height: 1fr;
+}
+
+.buttons {
+    height: auto;
+}
+
+.buttons > * {
+    margin-right: 1;
+}
+
+/* ダイアログ */
+ModalScreen {
+    align: center middle;
+}
+
+#dialog {
+    width: 72;
+    max-width: 95%;
+    height: auto;
+    max-height: 90%;
+    border: thick $primary;
+    background: $surface;
+    padding: 1 2;
+}
+
+#dialog.wide {
+    width: 110;
+    height: 90%;
+}
+
+.dialog-title {
+    text-style: bold;
+    margin-bottom: 1;
+}
+
+.dialog-body {
+    height: auto;
+    margin-bottom: 1;
+}
+
+.dialog-scroll {
+    height: 1fr;
+}
+
+.command-preview {
+    background: $boost;
+    color: $warning;
+    padding: 0 1;
+    height: auto;
+    margin-bottom: 1;
+}
+
+.dialog-buttons {
+    height: auto;
+    align-horizontal: right;
+}
+
+.dialog-buttons Button {
+    margin-left: 1;
+}
+
+.log-view {
+    background: $boost;
+    padding: 0 1;
+}
+
+#mod-selection {
+    height: 1fr;
+}

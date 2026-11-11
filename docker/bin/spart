@@ -1,0 +1,10 @@
+#!/bin/sh
+# HAKUSANの spart を模したテスト用スタブ。実際の書式は要実機確認。
+cat <<'TBL'
+     QUEUE STA   FREE  TOTAL   FREE  TOTAL RESORC  OTHER    MAX  DEFAULT    MAX
+ PARTITION TUS  CORES  CORES  NODES  NODES PENDNG PENDNG  NODES WALLTIME WALLTIME
+      DEF*  UP      4      4      1      1      0      0      1     None  1-00:00
+      TINY  UP      4      4      1      1      0      0      1     None    00:30
+     GPU-1  UP      4      4      1      1      0      0      1     None    12:00
+     GPU-S  UP      4      4      1      1      0      0      1     None    12:00
+TBL
