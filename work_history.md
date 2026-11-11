@@ -52,3 +52,12 @@
   `squeue --json` が大きくなった時点で JSON 解析失敗→テキストへ誤フォールバックしたことで発覚。EOF までループして読むよう修正し回帰テストを追加。
 - テスト用 `$JOBDIR` は Prolog（作成）/ TaskProlog（`export JOBDIR=`）/ Epilog（削除）で模倣。
 - 一度、最終確認コマンドがプロセス強制終了（exit 137）したが、再実行で単体127件・結合12件とも成功。
+
+### インストール手順の見直し（同日）
+
+- HAKUSAN には venv も uv も無く、Singularity がある、との情報を受けて README を書き直した。
+  uv の単体バイナリ（musl 版、sha256 を確認）を `~/.local/bin` に置き、`uv tool install` で入れる方式。
+- Singularity は Slurm CLI・`/etc/slurm`・munge をバインドする必要があり壊れやすいので使わない、と明記。
+- 手元で GitHub から `uv tool install` → `hakusan-tui --demo --diagnose` が動き、
+  wheel に `app.tcss` とデモデータが含まれることを確認。uv 0.7.9 musl 版の配布 URL も存在を確認。
+- 実機未確認の項目（外部ネットワーク、Python、quota）を `docs/hakusan-site.md` の #14〜#16 に追加。

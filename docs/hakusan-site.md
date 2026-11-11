@@ -18,6 +18,16 @@
 | 11 | パーティション別ルール | `scontrol` の MaxTime・ノード数・ノードの GPU 数・メモリで検証 | `--gres` 必須か、GPU パーティションの CPU/メモリ上限、ユーザー当たり同時実行数 |
 | 12 | 対話ジョブ上限 | 資料の参考値（CPU 48h / GPU 12h）を説明文に表示するだけで判定に使わない | 現行ポリシー |
 | 13 | ホスト名 | `hakusan1`/`hakusan2` なら「ログインノード」注意を表示（権限判定には使わない） | FQDN 表記 |
+| 14 | インストール方式 | uv の単体バイナリを `~/.local/bin` に置き、`uv tool install` で独立環境に導入（README）。HAKUSAN には venv も uv も無い前提。Singularity は使わない | ログインノードから GitHub / PyPI / python-build-standalone に出られるか（プロキシ設定の要否） |
+| 15 | Python | uv が Python 3.12 を自動取得。代替としてサイト提供の Python（`module avail python`）を `--python` で指定 | 3.11 以上がサイト提供されているか。uv 取得版の Python がログインノードで動くか |
+| 16 | ホーム容量・配置 | uv・Python・環境で約150MB。キャッシュは `uv cache clean` で削除 | ホームの quota。`~/.local` に置くことがサイト規則に反しないか |
+
+## インストールの確認手順
+
+1. README の「0. 事前確認」で、外部ネットワークに出られるか・ホームの容量・`module avail python` を確認して記録。
+2. uv の tar.gz の `sha256sum -c` が OK になることを確認。
+3. `uv tool install` 後に `hakusan-tui --diagnose` を実行し、Slurm / squeue --json / sacct / spart / module の結果を記録。
+4. 外に出られない場合は、持ち込み方式（scp）とサイト提供 Python の組み合わせを試し、手順を README に反映する。
 
 ## 実機での受け入れ手順（Phase 4）
 

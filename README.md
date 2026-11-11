@@ -9,17 +9,94 @@ Python + [Textual](https://textual.textualize.io/) 製。仕様は [`docs/slurm.
 - ジョブ投入はフォーム → スクリプト全文プレビュー → 保存 → 確認して `sbatch`。
 - キャンセルは自分のジョブだけ、実行直前の所有者再確認と二段階確認の後に `scancel`。
 
-## インストール
+## インストール（HAKUSAN の個人ホームへ）
+
+HAKUSAN には Python の venv も uv もないため、**uv の単体バイナリをホームに置き、uv が管理する
+Python で独立した環境にインストール** します。root もシステムの Python も不要で、すべて `~/.local`
+の下に収まります。管理者権限・常駐サーバは使わず、SSH のパスワードや鍵も扱いません。
+
+> HAKUSAN 実機での手順確認はまだです（[`docs/hakusan-site.md`](docs/hakusan-site.md) の #14〜#16）。
+
+### 0. 事前確認
 
 ```bash
-# HAKUSAN ログインノード上で（資料 p.18: ssh <ユーザー名>@hakusan1）
-git clone <this repo> hakusan-tui && cd hakusan-tui
-uv sync
-uv run hakusan-tui
+ssh <JAISTユーザー名>@hakusan1         # 資料 p.18
+curl -sI https://pypi.org | head -1    # ログインノードから外に出られるか
+quota -s 2>/dev/null || df -h ~        # ホームの容量（全体で約150MB使います）
+module avail python 2>&1 | head        # サイト提供の Python 3.11 以上があるか（任意）
 ```
 
-Python 3.11 以上と [uv](https://docs.astral.sh/uv/) が必要です。管理者権限・常駐サーバは不要で、
-SSH のパスワードや鍵は扱いません。
+### 1. uv をホームに置く
+
+`curl | sh` は使わず、チェックサムを確認してから展開します。
+
+```bash
+VER=0.7.9    # 最新版を使う場合は https://github.com/astral-sh/uv/releases で確認
+ARCH=x86_64-unknown-linux-musl   # 静的リンク版。古い glibc でも動く
+mkdir -p ~/.local/bin ~/tmp/uv-dl && cd ~/tmp/uv-dl
+curl -fLO https://github.com/astral-sh/uv/releases/download/$VER/uv-$ARCH.tar.gz
+curl -fLO https://github.com/astral-sh/uv/releases/download/$VER/uv-$ARCH.tar.gz.sha256
+sha256sum -c uv-$ARCH.tar.gz.sha256          # OK と出ることを確認
+tar xzf uv-$ARCH.tar.gz
+install -m 755 uv-$ARCH/uv uv-$ARCH/uvx ~/.local/bin/
+cd ~ && rm -rf ~/tmp/uv-dl
+```
+
+### 2. PATH を通す
+
+```bash
+grep -q 'HOME/.local/bin' ~/.bashrc || echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.bashrc
+source ~/.bashrc
+```
+
+### 3. hakusan-tui をインストール
+
+```bash
+# Python 3.12 は uv が自動で取得する（システムの Python は変更しない）
+uv tool install --python 3.12 git+https://github.com/mutomasa/hakusan-tui
+# git が無い場合
+uv tool install --python 3.12 https://github.com/mutomasa/hakusan-tui/archive/refs/heads/main.zip
+# サイト提供の Python 3.11 以上を使う場合（Python のダウンロードを省ける）
+uv tool install --python "$(which python3)" git+https://github.com/mutomasa/hakusan-tui
+
+uv cache clean               # ダウンロードキャッシュ（~/.cache/uv）を消して容量を節約
+hakusan-tui --diagnose       # 動作確認
+hakusan-tui
+```
+
+### 入る場所・更新・削除
+
+| もの | 場所 |
+|---|---|
+| uv / uvx | `~/.local/bin/` |
+| Python | `~/.local/share/uv/python/` |
+| hakusan-tui の環境 | `~/.local/share/uv/tools/hakusan-tui/`（コマンドは `~/.local/bin/hakusan-tui`） |
+| 設定 | `~/.config/hakusan-tui/config.toml` |
+
+```bash
+uv tool upgrade hakusan-tui      # 更新
+uv tool uninstall hakusan-tui    # 削除
+rm -f ~/.local/bin/uv ~/.local/bin/uvx && rm -rf ~/.local/share/uv ~/.cache/uv   # uv ごと削除
+```
+
+### ログインノードから外に出られない場合
+
+手元の PC で uv の tar.gz を用意して `scp` で持ち込みます。Python とパッケージもダウンロードが必要なので、
+サイト提供の Python 3.11 以上（`module`）を使うか、手元で依存込みのファイルを作って持ち込む必要があります。
+
+### Singularity を使わない理由
+
+このTUIはログインノードの `squeue`・`sbatch`・`scancel`・`sacct` を直接呼びます。コンテナ内から使うには
+Slurm のコマンドとライブラリ、`/etc/slurm`、munge のソケットをすべてバインドする必要があり、壊れやすく、
+サイトのバージョンとずれる危険があります。Singularity は計算ノード上のジョブ（学習など）に使ってください。
+
+### 開発環境（手元の PC）
+
+```bash
+git clone https://github.com/mutomasa/hakusan-tui && cd hakusan-tui
+uv sync
+uv run hakusan-tui --demo    # Slurm がなくてもサンプルデータで体験できる
+```
 
 ## 起動オプション
 
