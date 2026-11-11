@@ -1,10 +1,23 @@
 /* hakusan-tui 共通テーマ（80×24 でも崩れないよう余白は最小限） */
 
-#topbar {
+#topbar-row {
     height: 1;
     background: $primary;
+}
+
+#topbar {
+    width: 1fr;
+    height: 1;
     color: $text;
     text-style: bold;
+}
+
+/* 右上のバージョン表示（セマンティック形式 vMAJOR.MINOR.PATCH） */
+#topbar-version {
+    width: auto;
+    height: 1;
+    padding: 0 1;
+    color: $text;
 }
 
 #statusbar {

@@ -183,3 +183,29 @@ async def test_tabs_render_demo_data(tmp_path, tab):
         await pilot.pause(0.3)
         tables = [t for t in app.query(DataTable) if t.row_count]
         assert tables, f"{tab}: データ行がありません"
+
+
+async def test_version_shown_top_right_in_semver(tmp_path):
+    import re
+
+    from hakusan_tui import __version__
+
+    assert re.fullmatch(r"\d+\.\d+\.\d+", __version__)
+    app = make_app(tmp_path)
+    async with app.run_test(size=SIZE) as pilot:
+        await pilot.pause()
+        badge = app.query_one("#topbar-version")
+        assert str(badge.render()) == f"v{__version__}"
+        # 右端に表示されている（右端の列がバッジの右端と一致）
+        assert badge.region.right == SIZE[0]
+        assert badge.region.y == 0
+
+
+async def test_mode_badge_visible_on_80_columns(tmp_path):
+    app = make_app(tmp_path, read_only=True)
+    async with app.run_test(size=(80, 24)) as pilot:
+        await pilot.pause()
+        topbar = app.query_one("#topbar")
+        visible = str(topbar.render())[: topbar.region.width]
+        assert "デモ / 読取専用" in visible
+        assert str(app.query_one("#topbar-version").render()) == "v0.1.1"

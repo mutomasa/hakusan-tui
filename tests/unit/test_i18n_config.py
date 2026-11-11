@@ -32,3 +32,13 @@ def test_load_config(tmp_path: Path):
     assert config.refresh.jobs_seconds == 20 and config.safety.read_only
     assert config.profile == "generic"
     assert load_config(tmp_path / "missing.toml").refresh.jobs_seconds == 15
+
+
+def test_version_single_source():
+    """パッケージのメタデータと __version__ が一致する（pyproject は __init__.py から読む）。"""
+    from importlib.metadata import version
+
+    from hakusan_tui import __version__
+
+    assert __version__ == "0.1.1"
+    assert version("hakusan-tui") == __version__

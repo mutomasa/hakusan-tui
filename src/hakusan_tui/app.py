@@ -9,8 +9,10 @@ from rich.text import Text
 from textual import work
 from textual.app import App, ComposeResult
 from textual.binding import Binding
+from textual.containers import Horizontal
 from textual.widgets import Footer, Input, Static, TabbedContent, TabPane, TextArea
 
+from hakusan_tui import __version__
 from hakusan_tui.adapters.base import ClusterAdapter
 from hakusan_tui.config import Config
 from hakusan_tui.context import HISTORY, JOBS, NODES, PARTITIONS, SPART, START, AppContext
@@ -68,7 +70,9 @@ class HakusanApp(App[None]):
     # ------------------------------------------------------------ 構築
 
     def compose(self) -> ComposeResult:
-        yield Static(id="topbar")
+        with Horizontal(id="topbar-row"):
+            yield Static(id="topbar")
+            yield Static(Text(f"v{__version__}"), id="topbar-version")
         with TabbedContent(initial=self._initial_tab(), id="main-tabs"):
             for i, (tab_id, label, cls) in enumerate(TABS):
                 with TabPane(f"{i + 1} {label}", id=tab_id):
@@ -175,9 +179,10 @@ class HakusanApp(App[None]):
             conn = "接続: 確認中"
         mode = ["デモ"] if self.ctx.adapter.mode == "demo" else []
         mode += ["読取専用"] if self.ctx.read_only else []
-        text = (f" HAKUSAN | {self.ctx.user} | {self.ctx.adapter.hostname} | "
-                f"最終更新 {fmt_clock(jobs.last_success)} | {conn}"
-                + (f" | {' / '.join(mode)}" if mode else ""))
+        # モード表示は狭い端末でも切れないよう先頭に置く（右上はバージョン表示）
+        badge = f" [{' / '.join(mode)}]" if mode else ""
+        text = (f" HAKUSAN{badge} | {self.ctx.user} | {self.ctx.adapter.hostname} | "
+                f"最終更新 {fmt_clock(jobs.last_success)} | {conn}")
         self.query_one("#topbar", Static).update(Text(text))
         self._render_status()
 

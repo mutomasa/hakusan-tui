@@ -1,6 +1,6 @@
 [project]
 name = "hakusan-tui"
-version = "0.1.0"
+dynamic = ["version"]
 description = "JAIST HAKUSAN 向け Slurm / GPU / Job 統合ターミナルUI"
 readme = "README.md"
 requires-python = ">=3.11"
@@ -15,6 +15,10 @@ hakusan-tui = "hakusan_tui.cli:main"
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
+
+[tool.hatch.version]
+# バージョンは src/hakusan_tui/__init__.py の __version__ だけで管理する（セマンティックバージョニング）
+path = "src/hakusan_tui/__init__.py"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/hakusan_tui"]
