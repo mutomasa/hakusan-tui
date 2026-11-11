@@ -3,6 +3,10 @@
 JAIST HAKUSAN（Slurm）を初めて使う人のための、Slurm / GPU / ジョブをまとめて扱うターミナルUIです。
 Python + [Textual](https://textual.textualize.io/) 製。仕様は [`docs/slurm.md`](docs/slurm.md)。
 
+## スクリーンショット
+<img width="789" height="856" alt="image" src="https://github.com/user-attachments/assets/32e91879-336a-4e58-8a46-ca18e12b90d7" />
+
+
 - 待機中（PD）・実行中（R）を日本語で表示し、待機理由（Resources / Priority など）を説明します。
 - GPU は **Slurm上の割当数** を型別（A40 / A100 / H100 VM）に表示します。実使用率とは区別し、
   取得できない値を 0 や推測値で埋めません。
