@@ -44,10 +44,29 @@ cd ~ && rm -rf ~/tmp/uv-dl
 
 ### 2. PATH を通す
 
+ログインしたときに読まれるのは `~/.bash_profile` / `~/.profile` で、`~/.bashrc` だけに書くと
+**再ログイン後に `uv` が見つからなくなる** ことがあります（HAKUSAN 実機で発生）。両方に書きます。
+
 ```bash
-grep -q 'HOME/.local/bin' ~/.bashrc || echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.bashrc
-source ~/.bashrc
+echo $SHELL                                   # bash 以外なら下の注記を参照
+LINE='export PATH="$HOME/.local/bin:$PATH"'
+# ログインシェル用（~/.bash_profile があると bash は ~/.profile を読まないので両方確認）
+for f in ~/.bash_profile ~/.profile; do
+  [ -f "$f" ] && ! grep -q 'HOME/.local/bin' "$f" && echo "$LINE" >> "$f"
+done
+[ -f ~/.bash_profile ] || [ -f ~/.profile ] || echo "$LINE" > ~/.profile
+# 対話シェル用
+grep -q 'HOME/.local/bin' ~/.bashrc 2>/dev/null || echo "$LINE" >> ~/.bashrc
+
+export PATH="$HOME/.local/bin:$PATH"          # 今のセッションにも反映
+uv --version
 ```
+
+- zsh の場合は `~/.zshrc` に同じ `export` 行を、tcsh/csh の場合は `~/.cshrc` に
+  `setenv PATH $HOME/.local/bin:$PATH` を書きます。
+- 一度ログアウトして入り直し、`uv --version` が動くことを確認してください。
+- `Command 'uv' not found ... snap install astral-uv` と出るのは PATH が通っていないときの Ubuntu の案内です
+  （snap は root が必要なので使いません）。`ls ~/.local/bin/uv` でファイルがあれば、上の設定だけで直ります。
 
 ### 3. hakusan-tui をインストール
 

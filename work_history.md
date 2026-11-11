@@ -89,3 +89,10 @@
   待機中の配列ジョブ（テキスト `123_[1-10]` と JSON `123`）は同一とみなし重複させない。
 - 設計書 7.1 の「ジョブ一覧: `squeue --json` 一次候補」から外れるが、実機の規模による判断。
 - 単体・UI 132 件、Docker 実Slurm 結合 12 件成功。
+
+### PATH の永続化（同日）
+
+- HAKUSAN 実機で再ログイン後に `uv` が見つからなくなった（`Command 'uv' not found ... snap install astral-uv`）。
+  README の手順が `~/.bashrc` だけに PATH を追記しており、ログインシェルが読む `~/.bash_profile` / `~/.profile` に無かったのが原因と推定。
+- README の手順2を、`~/.bash_profile`・`~/.profile`・`~/.bashrc` に重複なく追記する形に修正。zsh / tcsh の注記を追加。
+  仮のホームで3パターン（なし / .profile のみ / 両方あり）と2回実行で重複しないことを確認。
