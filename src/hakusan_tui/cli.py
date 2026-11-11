@@ -9,11 +9,11 @@ from dataclasses import replace
 from pathlib import Path
 
 from hakusan_tui import __version__
-from hakusan_tui.adapters.base import ClusterAdapter
+from hakusan_tui.adapters.base import AdapterError, ClusterAdapter
 from hakusan_tui.adapters.demo import DemoAdapter
 from hakusan_tui.adapters.slurm import SlurmAdapter
 from hakusan_tui.config import Config, load_config
-from hakusan_tui.services.diagnostics import diagnose, format_report
+from hakusan_tui.services.diagnostics import DiagnosticItem, diagnose, format_report
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -42,7 +42,23 @@ def build_adapter(config: Config) -> ClusterAdapter:
 
 async def _diagnose(adapter: ClusterAdapter) -> str:
     caps = await adapter.detect_capabilities()
-    return format_report(diagnose(adapter, caps))
+    items = diagnose(adapter, caps)
+    if caps.slurm_available and adapter.executes_commands:
+        items.append(await _diagnose_job_listing(adapter))
+    return format_report(items)
+
+
+async def _diagnose_job_listing(adapter: ClusterAdapter) -> DiagnosticItem:
+    """全ジョブ一覧を実際に取得し、JSON のまま読めたかを報告する。"""
+    name = "ジョブ一覧の取得"
+    try:
+        jobs = await adapter.get_jobs()
+    except AdapterError as exc:
+        return DiagnosticItem(name, "NG", str(exc))
+    warnings = adapter.take_warnings()
+    if warnings:
+        return DiagnosticItem(name, "注意", f"{len(jobs)} 件（{warnings[-1]}）")
+    return DiagnosticItem(name, "OK", f"{len(jobs)} 件")
 
 
 def main(argv: list[str] | None = None) -> int:

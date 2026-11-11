@@ -5,7 +5,7 @@
 
 | # | 項目 | 現在の実装 | 実機で確認すること |
 |---|---|---|---|
-| 1 | Slurm バージョン・`--json` | 起動時に `squeue --json --me` を試し、失敗/解析不能ならテキスト形式（0x1f 区切り） | 資料記載 25.05.5 での `squeue --json` スキーマ（data_parser v0.0.4x）と速度・出力サイズ |
+| 1 | Slurm バージョン・`--json` | 起動時に `squeue --json --me` を試し、失敗/解析不能ならテキスト形式（0x1f 区切り）。全ジョブの JSON が読めない場合も原因付きで警告して切替 | **実機で全ジョブの `squeue --json` が解析失敗（Expecting ',' delimiter）。出力サイズ・エラー位置を確認中**。資料記載 25.05.5 のスキーマと速度 |
 | 2 | `spart` の書式 | 2行ヘッダー＋列数が揃った表なら解析、ダメなら原文表示。テストはスタブ（`docker/bin/spart`） | 実際の列（ユーザー上限、GPU列の有無）、`spart -l` 等のオプション |
 | 3 | GPU の GRES 表記 | `Gres=gpu:<type>:<n>`、`AllocTRES` の `gres/gpu` / `gres/gpu:<type>`、`GresUsed`（あれば優先） | A40 / A100 / H100 VM の type 名。H100 1/4 の表現（現在は type 名に `1_4`/`vgpu`/`frac` 等を含むと「仮想/分割GPU」扱い） |
 | 4 | GPU 使用率 accounting | 未実装（「取得不可」表示） | `AccountingStorageTRES` に `gres/gpuutil`・`gres/gpumem` があるか |

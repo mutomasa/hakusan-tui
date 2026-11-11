@@ -78,3 +78,42 @@ async def test_submit_runs_in_script_directory(tmp_path):
     result = await adapter.submit_job(str(script))
     assert result.stdout == "77\n" and seen["cwd"] == str(tmp_path)
     assert runner.calls[0] == ("sbatch", "--parsable", str(script))
+
+
+async def _json_broken_adapter(stdout: str, truncated: bool = False):
+    from hakusan_tui.models import CommandResult
+
+    line = FIELD_SEP.join(["9", "testuser", "DEF", "RUNNING", "1:00", "10:00", "1", "1", "N/A",
+                           "lcpcc-001", "job"])
+
+    def squeue_json(a):
+        if "--me" in a:
+            return ok(a, fixture_text("squeue_me.json"))
+        return CommandResult(tuple(a), 0, stdout, "", 0.1, truncated=truncated)
+
+    adapter, runner = make({
+        ("sinfo", "--version"): lambda a: ok(a, "slurm 25.05.5\n"),
+        ("squeue", "--json"): squeue_json,
+        ("squeue", "-h"): lambda a: ok(a, line + "\n"),
+        ("bash", "-lc"): lambda a: ok(a, "function\n"),
+    })
+    await adapter.detect_capabilities()
+    return adapter, runner
+
+
+async def test_broken_json_falls_back_with_cause():
+    adapter, runner = await _json_broken_adapter('{"jobs": [{"name": "a" "b"}]}')
+    jobs = await adapter.get_jobs()
+    [warning] = adapter.take_warnings()
+    assert jobs[0].job_id == "9"
+    assert "JSON が不正" in warning and "バイト" in warning
+    assert '"a"' not in warning  # 出力内容（他人のジョブ名など）は警告に含めない
+    await adapter.get_jobs()
+    assert sum(1 for c in runner.calls if c == ("squeue", "--json")) == 1  # 以後はテキスト形式
+
+
+async def test_truncated_json_reports_truncation():
+    adapter, _ = await _json_broken_adapter('{"jobs": [', truncated=True)
+    await adapter.get_jobs()
+    [warning] = adapter.take_warnings()
+    assert "切り詰め" in warning

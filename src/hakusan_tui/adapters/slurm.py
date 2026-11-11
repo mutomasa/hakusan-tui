@@ -26,6 +26,17 @@ from hakusan_tui.validation import is_job_id
 SACCT_TIMEOUT = 15.0
 SPART_TIMEOUT = 10.0
 SUBMIT_TIMEOUT = 30.0
+JSON_TIMEOUT = 15.0
+
+
+def json_fallback_message(result: CommandResult, exc: Exception) -> str:
+    """原因（出力の切り詰め / 壊れたJSON）が分かる警告文。出力内容そのものは含めない。"""
+    size = len(result.stdout.encode("utf-8", errors="replace"))
+    if result.truncated:
+        cause = f"出力が上限を超えて切り詰められました（{size} バイトで打ち切り）"
+    else:
+        cause = f"Slurm の JSON が不正です（{size} バイト、{exc}）"
+    return f"squeue --json を解析できないためテキスト形式に切替: {cause}"
 
 
 class SlurmAdapter:
@@ -106,13 +117,23 @@ class SlurmAdapter:
 
     async def get_jobs(self) -> list[Job]:
         if self._use_json:
-            try:
-                return p.parse_squeue_json(await self._run_ok(["squeue", "--json"]))
-            except p.ParseError as exc:
-                self._warnings.append(f"JSON解析に失敗したためテキスト形式に切替: {exc}")
-                self._use_json = False
+            jobs = await self._get_jobs_json()
+            if jobs is not None:
+                return jobs
         text = await self._run_ok(["squeue", "-h", "-a", "-o", p.SQUEUE_FORMAT])
         return p.parse_squeue_text(text, self._warnings)
+
+    async def _get_jobs_json(self) -> list[Job] | None:
+        """JSON で取得する。解析できなければ原因付きで警告し、以後テキスト形式に切り替える。"""
+        result = await self._run(["squeue", "--json"], timeout=JSON_TIMEOUT)
+        if not result.ok:
+            raise AdapterError(result.error_message())
+        try:
+            return p.parse_squeue_json(result.stdout)
+        except p.ParseError as exc:
+            self._warnings.append(json_fallback_message(result, exc))
+            self._use_json = False
+            return None
 
     async def get_nodes(self) -> list[Node]:
         return p.parse_scontrol_nodes(await self._run_ok(["scontrol", "show", "node", "-o"]))
