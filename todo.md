@@ -49,9 +49,16 @@
 - [x] `uv run pytest` / `uv run ruff check .` 成功
 - [ ] HAKUSAN実機確認（要実機・未実施。項目は docs/hakusan-site.md）
 
+## 汎用化（v0.2.0）
+
+- [x] パーティション・ノードの種別を名前でなく GRES / TRES で判定（`adapters/classify.py`）
+- [x] HAKUSAN 以外の GPU 型は Slurm の type 名で集計
+- [x] README に「他の Slurm クラスタで使う」を追加
+
 ## 残課題・将来拡張
 
 - [ ] PBS変更系（qalter/qhold/qrls/qrerun）の所有者確認＋二段階確認つき実行
 - [ ] GPU実機メトリクス（sacct の gres/gpuutil 等、サイト設定次第）
 - [ ] 英語UI切替（i18n）
 - [ ] SSHリモートモード
+- [ ] サイト固有の説明文・テンプレート（`$JOBDIR` など）を `--profile` で切替

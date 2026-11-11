@@ -121,6 +121,21 @@ uv sync
 uv run hakusan-tui --demo    # Slurm がなくてもサンプルデータで体験できる
 ```
 
+## 他の Slurm クラスタで使う
+
+HAKUSAN 以外でも、Slurm が動いている Linux のログインノードならそのまま使えます（インストール手順は同じ）。
+必要なのは `sinfo` / `squeue` / `scontrol` / `sbatch` / `scancel` が使えることだけです。
+
+- **CPU / GPU / VM の種別**: パーティション名ではなく、所属ノードの GRES（`gpu:...`）と
+  パーティションの TRES（`gres/gpu`）で判定します。構成から分からないときだけ名前（`GPU`で始まる /
+  `VM` を含む）を使います。
+- **GPU の型**: A40 / A100 / H100 以外は Slurm の type 名をそのまま見出しにします（例 `V100`・`L40S`）。
+  MIG・分割GPUは `型名 (MIGインスタンス)` のように物理GPUと別に集計します。
+- **無くても動くもの**: `squeue --json`（テキスト形式に切替）、`sacct`、`sstat`、`spart`、`module`、PBS 互換コマンド。
+  起動時に有無を調べ、無いものは「利用不可」と表示します（`hakusan-tui --diagnose` で確認できます）。
+- **HAKUSAN 向けのまま残るもの**: 投入テンプレート「高速ストレージ使用」は `$JOBDIR` 前提です
+  （無いサイトでは安全側に即エラー終了します）。ヘルプ・説明文は HAKUSAN の講習資料に沿っています。
+
 ## 起動オプション
 
 ```bash

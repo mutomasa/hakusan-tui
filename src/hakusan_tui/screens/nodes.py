@@ -7,7 +7,7 @@ from textual.app import ComposeResult
 from textual.containers import Horizontal
 from textual.widgets import Button, DataTable, Input, Select, Static, TabbedContent, TabPane
 
-from hakusan_tui.adapters.hakusan import node_kind, partition_kind
+from hakusan_tui.adapters.classify import node_kind, partition_kind
 from hakusan_tui.formatting import fmt_duration, fmt_int
 from hakusan_tui.i18n import node_state_label
 from hakusan_tui.models import Node, Partition
@@ -29,9 +29,9 @@ def node_row(n: Node) -> tuple[str, tuple[str, ...]]:
     )
 
 
-def partition_row(p: Partition) -> tuple[str, tuple[str, ...]]:
+def partition_row(p: Partition, nodes: list[Node] = ()) -> tuple[str, tuple[str, ...]]:
     return p.name, (
-        p.name, partition_kind(p.name), "○" if p.is_default else "",
+        p.name, partition_kind(p, nodes), "○" if p.is_default else "",
         p.state_summary or "不明", fmt_duration(p.max_time_seconds), fmt_int(p.total_nodes),
         fmt_int(p.total_cpus), ",".join(f"{k}={v}" for k, v in p.tres.items()) or "—",
     )
@@ -71,7 +71,7 @@ class NodesTab(BaseTab):
     def update_view(self) -> None:
         self._update_nodes()
         fill_table(self.query_one("#partitions-table", DataTable), PART_COLUMNS,
-                   [partition_row(p) for p in self.ctx.partitions()])
+                   [partition_row(p, self.ctx.nodes()) for p in self.ctx.partitions()])
         self._update_limits()
 
     def _update_nodes(self) -> None:

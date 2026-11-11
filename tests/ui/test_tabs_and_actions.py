@@ -208,4 +208,4 @@ async def test_mode_badge_visible_on_80_columns(tmp_path):
         topbar = app.query_one("#topbar")
         visible = str(topbar.render())[: topbar.region.width]
         assert "デモ / 読取専用" in visible
-        assert str(app.query_one("#topbar-version").render()) == "v0.1.1"
+        assert str(app.query_one("#topbar-version").render()) == "v0.2.0"

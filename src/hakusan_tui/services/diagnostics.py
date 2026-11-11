@@ -48,7 +48,7 @@ def _login_host_item(host: str) -> DiagnosticItem:
     if short in LOGIN_HOSTS:
         return DiagnosticItem("実行場所", "注意",
                               "ログインノードです。計算・コンパイルはジョブとして実行してください")
-    return DiagnosticItem("実行場所", "情報", "HAKUSANログインノード名ではありません（判定には使いません）")
+    return DiagnosticItem("実行場所", "情報", "既知のログインノード名ではありません。ログインノードでは重い処理をしないでください")
 
 
 def format_report(items: list[DiagnosticItem]) -> str:

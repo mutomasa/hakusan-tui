@@ -12,8 +12,8 @@ import shlex
 from dataclasses import dataclass, field, replace
 from pathlib import Path
 
+from hakusan_tui.adapters.classify import partition_kind
 from hakusan_tui.adapters.gpu import parse_gres
-from hakusan_tui.adapters.hakusan import partition_kind
 from hakusan_tui.adapters.slurm_parsers import format_duration, parse_duration, parse_memory_mib
 from hakusan_tui.models import Node, Partition
 from hakusan_tui.validation import (
@@ -251,7 +251,7 @@ def _max_gpus_per_node(nodes: list[Node]) -> int | None:
 
 def _check_gpu(spec: JobSpec, part: Partition, nodes: list[Node]) -> list[Issue]:
     gpus = int(spec.gpus) if spec.gpus.isdigit() else 0
-    kind = partition_kind(part.name)
+    kind = partition_kind(part, nodes)
     if gpus == 0:
         return [Issue("warning", "gpus", "GPUパーティションですがGPUを要求していません")] if kind != "CPU" else []
     if kind == "CPU":

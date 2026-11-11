@@ -40,5 +40,5 @@ def test_version_single_source():
 
     from hakusan_tui import __version__
 
-    assert __version__ == "0.1.1"
+    assert __version__ == "0.2.0"
     assert version("hakusan-tui") == __version__

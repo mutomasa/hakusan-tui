@@ -90,3 +90,10 @@ def test_unknown_type_unit():
     assert gpu.classify_unit(None) == "unknown"
     assert gpu.classify_unit("mystery") == "unknown"
     assert gpu.classify_group(None, "node1", "unknown") == "不明"
+
+
+def test_other_site_types_use_slurm_type_name():
+    assert gpu.classify_group("v100", "n1", "physical_gpu") == "V100"
+    assert gpu.classify_group("l40s", "n1", "physical_gpu") == "L40S"
+    assert gpu.classify_group("mystery", "n1", "unknown") == "MYSTERY"
+    assert gpu.classify_group("1g.10gb", "n1", "mig_instance") == "1G.10GB (MIGインスタンス)"

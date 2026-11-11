@@ -1,11 +1,7 @@
-from hakusan_tui.adapters.hakusan import (
-    merge_spart_limits,
-    node_kind,
-    parse_spart,
-    partition_kind,
-)
+from hakusan_tui.adapters.classify import node_kind, partition_kind
+from hakusan_tui.adapters.hakusan import merge_spart_limits, parse_spart
 from hakusan_tui.adapters.slurm_parsers import parse_scontrol_partitions
-from hakusan_tui.models import Node
+from hakusan_tui.models import Node, Partition
 from tests.conftest import fixture_text
 
 
@@ -36,10 +32,32 @@ def test_merge_without_spart_keeps_empty_limits():
     assert all(p.site_limits == {} for p in merge_spart_limits(parts, None))
 
 
-def test_partition_and_node_kind():
-    assert partition_kind("GPU-1A") == "GPU"
-    assert partition_kind("GPU-VM") == "VM"
-    assert partition_kind("DEF") == "CPU"
+def _part(name, nodes=(), tres=None):
+    return Partition(name, True, None, len(nodes), None, node_names=tuple(nodes), tres=tres or {})
+
+
+def test_partition_kind_falls_back_to_name_without_node_info():
+    assert partition_kind(_part("GPU-1A")) == "GPU"
+    assert partition_kind(_part("GPU-VM")) == "VM"
+    assert partition_kind(_part("DEF")) == "CPU"
+
+
+def test_partition_kind_uses_node_gres_regardless_of_name():
+    nodes = [Node("g1", "IDLE", ("a100q",), gres_raw="gpu:a100:4"),
+             Node("c1", "IDLE", ("short",), cpus_total=64)]
+    assert partition_kind(_part("a100q", ["g1"]), nodes) == "GPU"
+    assert partition_kind(_part("short", ["c1"]), nodes) == "CPU"
+
+
+def test_partition_kind_uses_tres_and_virtual_gpu():
+    assert partition_kind(_part("big", tres={"cpu": "8", "gres/gpu": "4"})) == "GPU"
+    vm = [Node("v1", "IDLE", ("cloud",), gres_raw="gpu:h100_1_4:4")]
+    assert partition_kind(_part("cloud", ["v1"]), vm) == "VM"
+
+
+def test_node_kind():
     assert node_kind(Node("g", "IDLE", ("GPU-1",), gres_raw="gpu:a40:2")) == "GPU"
+    assert node_kind(Node("g", "IDLE", ("batch",), gres_raw="gpu:v100:0")) == "CPU"
+    assert node_kind(Node("v", "IDLE", ("x",), gres_raw="gpu:h100_1_4:4")) == "VM"
     assert node_kind(Node("c", "IDLE", ("DEF",))) == "CPU"
     assert node_kind(Node("x", "IDLE", ())) == "不明"

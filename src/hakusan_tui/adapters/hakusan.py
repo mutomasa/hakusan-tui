@@ -1,11 +1,11 @@
-"""HAKUSAN サイトプロファイル（spart 解析、パーティション分類）。
+"""HAKUSAN サイトプロファイル（spart 解析、ログインノード名）。
 
 spart の実際の書式は要実機確認。列数が揃った表として読めない場合は原文表示にする。
 """
 
 from __future__ import annotations
 
-from hakusan_tui.models import Node, Partition, SpartTable
+from hakusan_tui.models import Partition, SpartTable
 
 LOGIN_HOSTS = ("hakusan1", "hakusan2")
 
@@ -54,21 +54,3 @@ def _with_limits(p: Partition, limits: dict[str, str]) -> Partition:
 
     return replace(p, site_limits=limits)
 
-
-def partition_kind(name: str) -> str:
-    upper = name.upper()
-    if "VM" in upper:
-        return "VM"
-    if upper.startswith("GPU"):
-        return "GPU"
-    return "CPU"
-
-
-def node_kind(node: Node) -> str:
-    if any("VM" in p.upper() for p in node.partitions):
-        return "VM"
-    if node.gres_raw and "gpu" in node.gres_raw:
-        return "GPU"
-    if node.partitions or node.cpus_total:
-        return "CPU"
-    return "不明"

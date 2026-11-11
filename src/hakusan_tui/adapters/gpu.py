@@ -93,7 +93,16 @@ def classify_group(gpu_type: str | None, node_name: str, unit: str) -> str:
         return "A100"
     if "a40" in text:
         return "A40"
-    return "その他" if gpu_type else "不明"
+    return generic_group_label(gpu_type, unit)
+
+
+def generic_group_label(gpu_type: str | None, unit: str) -> str:
+    """HAKUSAN 以外の型は Slurm の type 名をそのまま見出しにする（例 ``v100`` → ``V100``）。"""
+    if not gpu_type:
+        return "不明"
+    label = gpu_type.upper()
+    # MIG・分割GPUは物理GPUと同じ見出しにしない（物理枚数への混入を防ぐ）
+    return f"{label} ({UNIT_LABELS[unit]})" if unit in ("mig_instance", "virtual_fraction") else label
 
 
 def _allocated_for(node: Node, entry: GresEntry, gpu_entries: list[GresEntry]) -> int | None:
